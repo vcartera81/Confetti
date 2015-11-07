@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title></title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
+        .tile {
+            position: relative;
+            display: inline-block;
+            position: fixed;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+</head>
+<body>
+    <div id="counterWrapper" onclick="startStop()" style="position: fixed; z-index: 9999999999; top: 4%; left: 50%; font-size: 18px; width: 90px; height: 25px; text-align: center; background-color: white; opacity: 0.7; border-radius: 4px;"><span id="counter"></span></div>
+<script>
+    $(document).ready(function() {
+        $("#counterWrapper").draggable();
+    });
+
+    var screenWidth = $(window).width();
+    var screenHeight = $(window).height();
+    var numberOfHorizontalTiles = 100;
+    var numberOfVerticalTiles = 54;
+    var totalTiles = numberOfHorizontalTiles * numberOfVerticalTiles;
+    var started = false;
+    var interval;
+
+    var tileWidth = screenWidth / numberOfHorizontalTiles;
+    var tileHeight = screenHeight / numberOfVerticalTiles;
+
+    var getRandomColor = function () {
+        var hex = "";
+        while (hex.length < 6) {
+            hex += Math.round((Math.random() * 256)).toString(16);
+        }
+        return hex.substring(0, 6);
+    }
+
+    var index = 0;
+    for (var viterator = 0; viterator < numberOfVerticalTiles; viterator++) {
+        for (var hiterator = 0; hiterator < numberOfHorizontalTiles; hiterator++) {
+            $("body").append("<div a-started='false' id='" + index + "' class='tile' style='width: " + tileWidth + "px; height: " + tileHeight + "px; background-color: #000; left: " + (hiterator * tileWidth) + "px; top: " + (viterator * tileHeight) + "px;'></div>");
+            index++;
+        }
+    }
+
+    var counter = totalTiles - 1;
+
+    var animation = function () {
+        var random = function (range) { return Math.round(Math.random() * range); }
+
+        var rId = random(totalTiles);
+        if ($("#" + rId).length == 0 || $("#" + rId).attr("a-started") === "true") return;
+        index++;
+        $("#" + rId).css("z-index", index);
+        $("#" + rId).attr("a-started", "true");
+        var duration = random(1540);
+        $("#" + rId).animate({
+            "background-color": "#" + getRandomColor(),
+            "border-radius": "100px",
+            //"height": 0,
+            //"width": 0,
+            //"top": $("#" + rId).offset().top + random(tileHeight) + "px",
+            //"left": $("#" + rId).offset().left + random(tileWidth) + "px"
+            "top": random(screenHeight) + "px",
+            "left": random(screenWidth) + "px"
+        }, duration, "swing", function () {
+            //$(this).remove();
+            $("#counter").html(counter);
+            counter--;
+        });
+    };
+
+    function startStop() {
+        if (!started) {
+            interval = setInterval(animation, 3);
+            started = true;
+        } else {
+            clearInterval(interval);
+            started = false;
+        }
+    }
+
+    //var stopLoop = function() { clearInterval(animationLoop); }
+    //var startLoop = function() { animationLoop(); }
+
+</script>
+</body>
+</html>
